@@ -29,6 +29,7 @@ async function run() {
     // await client.connect();
 
     const carsCollection = client.db("carDealerDB").collection("cars");
+    const reviewsCollection = client.db("carDealerDB").collection("reviews");
     const orderCollection = client.db("carDealerDB").collection("orders");
 
     // cars apis here
@@ -44,6 +45,12 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await carsCollection.findOne(query);
       console.log(result);
+      res.send(result);
+    });
+
+    // reviews apis here
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
       res.send(result);
     });
 
