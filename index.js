@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -23,17 +23,36 @@ const client = new MongoClient(uri, {
   },
 });
 
-const carsCollection = client.db("carDealerDB").collection("cars");
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+
+    const carsCollection = client.db("carDealerDB").collection("cars");
+    const orderCollection = client.db("carDealerDB").collection("orders");
+
+    // cars apis here
 
     app.get("/cars", async (req, res) => {
       const cursor = carsCollection.find();
       const result = await cursor.toArray();
       res.send(result);
+    });
+
+    app.get("/cars/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await carsCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
+    // orders apis here
+
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
+      console.log(result);
     });
 
     // Send a ping to confirm a successful connection
