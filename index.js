@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
@@ -35,6 +36,12 @@ async function run() {
 
     // user apis here
 
+    app.get("/users", async (req, res) => {
+      const query = req.body;
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = { email: user.email };
@@ -43,8 +50,29 @@ async function run() {
         return { message: "User already exists", insertedId: null };
       }
       const result = await userCollection.insertOne(user);
-      console.log(user);
+      res.send(result);
+    });
+
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      console.log(filter);
+
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc);
       console.log(result);
+      res.send(result);
+    });
+
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
       res.send(result);
     });
 
@@ -86,7 +114,6 @@ async function run() {
     app.post("/orders", async (req, res) => {
       const order = req.body.email;
       const result = await orderCollection.insertOne(order);
-      // console.log(result);
     });
 
     app.delete("/orders/:id", async (req, res) => {
