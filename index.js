@@ -42,6 +42,19 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === "admin";
+      }
+
+      res.send({ admin });
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = { email: user.email };
@@ -88,6 +101,14 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await carsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/cars", async (req, res) => {
+      const product = req.body;
+      console.log(product);
+      const result = await carsCollection.insertOne(product);
+      console.log(result);
       res.send(result);
     });
 
