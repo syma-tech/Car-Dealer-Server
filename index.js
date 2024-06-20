@@ -112,6 +112,15 @@ async function run() {
       res.send(result);
     });
 
+    app.delete("/cars/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      console.log(id, query);
+      const result = await carsCollection.deleteOne(query);
+      console.log(result);
+      // res.send(result);
+    });
+
     // reviews apis here
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
@@ -125,6 +134,13 @@ async function run() {
     });
 
     // orders apis here
+
+    app.get("/orders", async (req, res) => {
+      const result = await orderCollection.find().toArray();
+      console.log(result);
+      res.send(result);
+    });
+
     app.get("/orders", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
