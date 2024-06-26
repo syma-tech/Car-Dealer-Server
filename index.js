@@ -134,6 +134,15 @@ async function run() {
     });
 
     // orders apis here
+    app.get("/orders", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query?.email };
+      }
+      const result = await orderCollection.find(query).toArray();
+      console.log(result);
+      res.send(result);
+    });
 
     app.get("/orders", async (req, res) => {
       const result = await orderCollection.find().toArray();
@@ -141,16 +150,10 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/orders", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
-      const result = await orderCollection.find(query).toArray();
-      res.send(result);
-    });
-
     app.post("/orders", async (req, res) => {
-      const order = req.body.email;
+      const order = req.body;
       const result = await orderCollection.insertOne(order);
+      res.send(result);
     });
 
     app.delete("/orders/:id", async (req, res) => {
